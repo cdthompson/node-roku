@@ -20,6 +20,12 @@ Based on [node-roku](https://github.com/TheThingSystem/node-roku).
 `npm install veeta-tv/node-roku-test`
 
 
+## Module Initialization
+
+Pass in the Roku device ip address and developer password.
+
+`device = new RokuTest('192.168.1.100', 'passw0rd')`
+
 ## api
 
 ### type(string [, fn])
@@ -52,6 +58,11 @@ Using the `launch` command you can open application or allow a development appli
 
 see the example code in [test/launch.js](https://github.com/tmpvar/node-roku/blob/master/test/launch.js) and [test/dev-video.js](https://github.com/tmpvar/node-roku/blob/master/test/dev-video.js)
 
+### launch(Object)
+
+Launch the development roku channel, passing the key/value pairs from Object as URL query params.
+
+
 ### info(function(err, obj) {});
 
 returns an object of information about the roku
@@ -78,9 +89,17 @@ example object:
 
 ```
 
-### install(zip, password)
+### install(zip)
 
 Install the channel `zipfile` to a Roku device with development password `password`.
+
+### connectDebug()
+
+start listening for data on the console
+
+### destroyDebug()
+
+stop listening for data on the console
 
 
 ## license
