@@ -1,37 +1,24 @@
-roku
-====
+# node-roku-test
+---
 
-wrapper around the roku "external control" api
+Roku channel testing tool for node.  This is aimed at developers who are using a Roku in development mode and want to verify channel behavior.  
 
-## install
+This module can:
 
-`npm install roku`
+* Install a channel zip
+* Launch a channel with arbitrary arguments
+* Send ECP commands to a Roku device (e.g. key presses)
+* Listen for data on the debug console
 
-## use
 
-```javascript
+Based on [node-roku](https://github.com/TheThingSystem/node-roku).
 
-var ssdp = new (require('node-ssdp'))()
-var Roku = require('../roku.js');
 
-ssdp.once('response', function inResponse(msg, rinfo) {
-  var location = msg.toString().match(/Location: (.*)/i)[1].trim();
 
-  var device = new Roku(location);
+## Install
 
-  device.press(Roku.HOME);
-  device.delay(1000);
+`npm install veeta-tv/node-roku-test`
 
-  device.launch('pandora', function() {
-    process.exit(0);
-  });
-});
-
-ssdp.search('roku:ecp');
-
-```
-
-[more examples](https://github.com/tmpvar/node-roku/tree/master/test)
 
 ## api
 
@@ -90,6 +77,10 @@ example object:
   SCPDURL: 'ecp_SCPD.xml' }
 
 ```
+
+### install(zip, password)
+
+Install the channel `zipfile` to a Roku device with development password `password`.
 
 
 ## license

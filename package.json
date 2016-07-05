@@ -1,28 +1,14 @@
 {
-  "name": "roku",
-  "version": "0.2.0",
-  "description": "control your roku from node",
-  "main": "roku.js",
+  "name": "roku-test",
+  "version": "1.0.0",
+  "description": "debug your roku from node",
+  "main": "roku-test.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/TheThingSystem/roku"
-  },
-  "keywords": [
-    "roku",
-    "remote",
-    "control"
-  ],
-  "author": "Elijah Insua <tmpvar@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TheThingSystem/roku/issues"
-  },
   "dependencies": {
     "sax": "~0.5.4",
-    "request": "~2.22.0",
+    "request": "~2.72.0",
     "async": "~0.2.9"
   },
   "devDependencies": {
