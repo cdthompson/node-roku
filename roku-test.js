@@ -7,7 +7,7 @@ var sax = require('sax'),
     net = require('net');
 
 
-var RokuTest = function (host_or_ip, dev_password) {
+var RokuTest = function (host_or_ip, dev_password, dev_port) {
   this.host = host_or_ip;
   this.baseUrl = 'http://' + host_or_ip + ':8060/';
   this.commandQueue = [];
@@ -15,7 +15,8 @@ var RokuTest = function (host_or_ip, dev_password) {
   this.debugSocket = null;
   //console.log("baseUrl = " + this.baseUrl);
   this.devPassword = dev_password;
-  this.connectDebug();
+  this.devPort = dev_port;
+  this.connectDebug(dev_port);
 };
 
 util.inherits(RokuTest, EventEmitter);
@@ -42,6 +43,24 @@ util.inherits(RokuTest, EventEmitter);
     enumerable: true,
     value: name
   });
+});
+
+/**
+ * Optional constants to monitor development logs
+ */
+var ports = new Map();
+ports.set(8085, "main");
+ports.set(8089, "sg");
+ports.set(8090, "task1");
+ports.set(8091, "task2");
+ports.set(8092, "task3");
+ports.set(8093, "task4x");
+ports.set(8080, "profiler");
+ports.forEach(function (portName, portId) {
+ Object.defineProperty(RokuTest, portName.toUpperCase(), {
+   enumerable: true,
+   value: portId
+ });
 });
 
 RokuTest.prototype.type = function(string, fn) {
@@ -130,7 +149,7 @@ RokuTest.prototype.launch = function(a, fn) {
         }, fn);
       });
     }.bind(this));
-  } 
+  }
   else {
     this.commandQueue.push(function(callback) {
 
@@ -159,9 +178,9 @@ RokuTest.prototype.launchWithArgs = function(name, args, fn) {
       //console.log("Launch returned " + r.statusCode);
       callback(e)
       fn && fn(e)
-    }); 
+    });
   }.bind(this));
-  
+
   this.processQueue();
 };
 
@@ -173,10 +192,10 @@ RokuTest.prototype.install = function(zip) {
       passwd: '',
       archive: zip
     };
-    var auth = { 
-      user: 'rokudev', 
+    var auth = {
+      user: 'rokudev',
       pass: this.devPassword,
-      sendImmediately: false 
+      sendImmediately: false
     };
 
     request.post({url: url, formData: formData, auth: auth }, function(e, r, b) {
@@ -211,22 +230,22 @@ RokuTest.prototype.info = function(fn) {
   });
 };
 
-RokuTest.prototype.connectDebug = function() {
+RokuTest.prototype.connectDebug = function(port) {
   this.destroyDebug();
   this.debugSocket = new net.Socket();
 
   this.commandQueue.push(function(callback) {
-    this.debugSocket.connect({ port: 8085, host: this.host }, function() {
+    this.debugSocket.connect({ port: port, host: this.host }, function() {
       //console.log("Debug log connected");
 
       // temporary sink for debug log history
       this.debugSocket.on('data', function(data) {
         // the telnet server writes the last n lines of log on connect. Ignore them here.
         //console.log("ignoring " + data.length + " bytes");
-      }); 
+      });
       callback();
-    }.bind(this)); 
-  }.bind(this)); 
+    }.bind(this));
+  }.bind(this));
 
   this.delay(1000, function() {
     //console.log("Removing sink reader");
