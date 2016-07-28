@@ -22,9 +22,20 @@ Based on [node-roku](https://github.com/TheThingSystem/node-roku).
 
 ## Module Initialization
 
-Pass in the Roku device ip address and developer password.
+Pass in the Roku device ip address, developer password, and port to debug on
 
-`device = new RokuTest('192.168.1.100', 'passw0rd')`
+`device = new RokuTest('192.168.1.100', 'passw0rd', RokuTest.MAIN)`
+
+The following port constants are available:
+
+
+* `RokuTest.MAIN` 8085
+* `RokuTest.SG` 8089
+* `RokuTest.TASK1` 8090
+* `RokuTest.TASK2` 8091
+* `RokuTest.TASK3` 8092
+* `RokuTest.TASK4X` 8093
+* `RokuTest.PROFILER` 8080
 
 ## api
 
@@ -93,14 +104,20 @@ example object:
 
 Install the channel `zipfile` to a Roku device with development password `password`.
 
-### connectDebug()
+### connectDebug(port)
 
-start listening for data on the console
+Start listening for data on the console.  The `port` argument is optional.  If no port is specified, the port specified at module initialization will be used.
 
 ### destroyDebug()
 
-stop listening for data on the console
+Stop listening for data on the console.
 
+
+## Node Events
+
+### debugData
+
+The `debugData` event is emitted when the debug socket has data on it.  This will not be emitted for old data which the Roku "replays" on initial connection to the debug port.
 
 ## license
 
