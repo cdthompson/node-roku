@@ -8,15 +8,15 @@ var sax = require('sax'),
 
 
 var RokuTest = function (host_or_ip, dev_password, dev_port) {
-  this.host = host_or_ip;
-  this.baseUrl = 'http://' + host_or_ip + ':8060/';
+  this.host = host_or_ip || "0.0.0.0";
+  this.devPassword = dev_password || "";
+  this.devPort = dev_port || RokuTest.MAIN;
+
+  this.baseUrl = 'http://' + this.host + ':8060/';
   this.commandQueue = [];
   this.queued = false;
   this.debugSocket = null;
-  //console.log("baseUrl = " + this.baseUrl);
-  this.devPassword = dev_password;
-  this.devPort = dev_port;
-  this.connectDebug(dev_port);
+  this.connectDebug(this.devPort);
 };
 
 util.inherits(RokuTest, EventEmitter);
@@ -231,6 +231,7 @@ RokuTest.prototype.info = function(fn) {
 };
 
 RokuTest.prototype.connectDebug = function(port) {
+  port = port || this.devPort
   this.destroyDebug();
   this.debugSocket = new net.Socket();
 
