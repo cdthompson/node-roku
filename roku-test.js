@@ -237,7 +237,8 @@ RokuTest.prototype.takeScreenshot = function(writeStream, fn) {
 
 RokuTest.prototype.saveScreenshot = function(auth, writeStream, fn) {
   this.commandQueue.push(function(callback) {
-    var path = '/pkgs/dev.jpg?time=1470066056';
+    var cacheBuster = Math.round(new Date().getTime() / 1000);
+    var path = '/pkgs/dev.jpg?time=' + cacheBuster;
     var url = 'http://' + this.host + path;
 
     request.get(url, {auth: auth}, function(e, r, b) {
