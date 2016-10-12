@@ -207,6 +207,50 @@ RokuTest.prototype.install = function(zip) {
   this.processQueue();
 };
 
+/**
+ * @param  {[fs.createWriteStream()]}    [destination writeStream where the image will be saved]
+ * @param  {Function} fn            [callback function]
+ */
+RokuTest.prototype.takeScreenshot = function(writeStream, fn) {
+    this.commandQueue.push(function(callback) {
+      var url = 'http://' + this.host + '/plugin_inspect';
+      var formData = {
+        mysubmit: 'Screenshot',
+        passwd: '',
+        archive: ''
+      };
+      var auth = {
+        user: 'rokudev',
+        pass: this.devPassword,
+        sendImmediately: false
+      };
+
+      request.post({url: url, formData: formData, auth: auth}, function(e, r, b) {
+          // console.log('Taking screenshot returned ' + r.statusCode);
+          this.saveScreenshot(auth, writeStream, fn);
+          callback(e);
+      }.bind(this));
+    }.bind(this));
+
+    this.processQueue();
+};
+
+RokuTest.prototype.saveScreenshot = function(auth, writeStream, fn) {
+  this.commandQueue.push(function(callback) {
+    var cacheBuster = Math.round(new Date().getTime() / 1000);
+    var path = '/pkgs/dev.jpg?time=' + cacheBuster;
+    var url = 'http://' + this.host + path;
+
+    request.get(url, {auth: auth}, function(e, r, b) {
+      // console.log("Saving screenshot returned" + r.statusCode);
+      callback(e);
+      fn && fn(e);
+    }).pipe(writeStream);
+  }.bind(this));
+
+  this.processQueue();
+};
+
 RokuTest.prototype.info = function(fn) {
   var parser = sax.createStream({ strict: true });
   request.get(this.baseUrl).pipe(parser).on('error', fn);
