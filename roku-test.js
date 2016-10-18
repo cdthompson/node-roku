@@ -64,11 +64,10 @@ ports.forEach(function (portName, portId) {
 });
 
 RokuTest.prototype.type = function(string, fn) {
-  var press = this.press.bind(this);
-
   string.split('').forEach(function(key) {
-    press('Lit_' + encodeURIComponent(key), fn);
-  }, fn);
+    this.press('Lit_' + encodeURIComponent(key), fn);
+    this.delay(100);  // Roku processes key presses slowly, but still returns 200 if dropped
+  }.bind(this), fn);
 };
 
 RokuTest.prototype.press = function(string, fn) {
