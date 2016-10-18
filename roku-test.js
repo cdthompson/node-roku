@@ -67,7 +67,7 @@ RokuTest.prototype.type = function(string, fn) {
   var press = this.press.bind(this);
 
   string.split('').forEach(function(key) {
-    press('Lit_' + escape(key), fn);
+    press('Lit_' + encodeURIComponent(key), fn);
   }, fn);
 };
 
