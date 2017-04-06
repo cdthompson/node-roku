@@ -279,16 +279,35 @@ RokuTest.prototype.connectDebug = function(port) {
   this.debugSocket = new net.Socket();
 
   this.commandQueue.push(function(callback) {
-    this.debugSocket.connect({ port: port, host: this.host }, function() {
-      //console.log("Debug log connected");
 
-      // temporary sink for debug log history
-      this.debugSocket.on('data', function(data) {
-        // the telnet server writes the last n lines of log on connect. Ignore them here.
-        //console.log("ignoring " + data.length + " bytes");
-      });
+    this.debugSocket.on('connect', function() {
+      console.log("Debug log connected to " + this.debugSocket.remoteAddress + ":" + this.debugSocket.remotePort);
       callback();
     }.bind(this));
+
+    // temporary sink for debug log history
+    this.debugSocket.on('data', function(data) {
+      // the telnet server writes the last n lines of log on connect. Ignore them here.
+      //console.log("ignoring " + data.length + " bytes");
+      if (data.toString().match('Console connection is already in use.') !== null) {
+        console.log("CONSOLE ALREADY IN USE.  Make sure you don't have a telnet connection already open.");
+      }
+
+    });
+
+    this.debugSocket.on('close', function() {
+      console.log("Console connection closed");
+    });
+
+    this.debugSocket.on('error', function() {
+      console.log("Console connection error");
+    });
+
+    this.debugSocket.on('timeout', function() {
+      console.log("Console connection timeout");
+    });
+
+    this.debugSocket.connect({ port: port, host: this.host });
   }.bind(this));
 
   this.delay(1000, function() {
